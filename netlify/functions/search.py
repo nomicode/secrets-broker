@@ -1,18 +1,15 @@
 """
 GET /api/search?name=hf+or+huggingface&scope=ml.*
 
-Search the secret catalog by name/alias (OR terms, substring) and/or
-scope (fnmatch glob against the entry's scopes list).
-
-Also served as GET /available-secrets (no params = return everything).
+Search the static secret registry by name/alias (OR terms, substring)
+and/or scope (fnmatch glob). Also served as GET /available-secrets.
 """
-import fnmatch
 import json
 import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lib import catalog
+from lib import registry
 
 
 def handler(event, context):
@@ -23,31 +20,10 @@ def handler(event, context):
     raw_name = (params.get("name") or "").strip()
     raw_scope = (params.get("scope") or "").strip()
 
-    entries = catalog.load()
+    terms = [t.strip().lower() for t in raw_name.lower().split(" or ") if t.strip()] if raw_name else []
+    results = registry.search(terms, scope_pattern=raw_scope)
 
-    if raw_name:
-        # split on " or " (case-insensitive) to get OR terms
-        terms = [t.strip().lower() for t in raw_name.lower().split(" or ") if t.strip()]
-        entries = [e for e in entries if _name_matches(e, terms)]
-
-    if raw_scope:
-        entries = [e for e in entries if _scope_matches(e, raw_scope)]
-
-    return _json(200, {"results": entries, "total": len(entries)})
-
-
-def _name_matches(entry: dict, terms: list[str]) -> bool:
-    """True if any term is a substring of name or any alias."""
-    haystack = [entry.get("name", "").lower()] + [
-        a.lower() for a in entry.get("aliases", [])
-    ]
-    return any(term in h for term in terms for h in haystack)
-
-
-def _scope_matches(entry: dict, pattern: str) -> bool:
-    """True if any of the entry's scopes matches the glob pattern."""
-    scopes = entry.get("scopes", [])
-    return any(fnmatch.fnmatch(s, pattern) for s in scopes)
+    return _json(200, {"results": results, "total": len(results)})
 
 
 def _json(status: int, data: dict) -> dict:
