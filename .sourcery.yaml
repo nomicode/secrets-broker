@@ -1,0 +1,13 @@
+rule_settings:
+  enable:
+    - default
+  skip:
+    - augment-assignment      # a += 1 vs a = a + 1: style preference, skip
+    - use-named-expression    # walrus operator: readability preference, skip
+
+refactor:
+  python:
+    - typing                  # suggest type annotation improvements
+
+metrics:
+  quality_threshold: 25       # flag files scoring below this
