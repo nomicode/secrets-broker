@@ -1,0 +1,7 @@
+{
+  "name": "secrets-broker",
+  "private": true,
+  "devDependencies": {
+    "@trunkio/launcher": "latest"
+  }
+}
