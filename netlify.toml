@@ -4,9 +4,16 @@
 [functions]
   directory = "netlify/functions"
 
+# API routing
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
+  status = 200
+
+# Convenience aliases
+[[redirects]]
+  from = "/available-secrets"
+  to = "/.netlify/functions/search"
   status = 200
 
 [[redirects]]

@@ -113,6 +113,26 @@ def _open_browser(url: str) -> None:
 # CLI
 # ---------------------------------------------------------------------------
 
+def search_secrets(name: str = "", scope: str = "") -> list[dict]:
+    """
+    Search the secret catalog.
+
+    Args:
+        name:  OR-separated terms, e.g. "hf or huggingface"
+        scope: glob pattern, e.g. "ml.*" or "workflow.*"
+
+    Returns list of matching catalog entries.
+    """
+    params = []
+    if name:
+        params.append(f"name={urllib.request.quote(name)}")
+    if scope:
+        params.append(f"scope={urllib.request.quote(scope)}")
+    qs = "?" + "&".join(params) if params else ""
+    _, body = _get(f"/api/search{qs}")
+    return body.get("results", [])
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("usage: python secrets_broker.py <label>", file=sys.stderr)
