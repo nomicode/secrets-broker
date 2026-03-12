@@ -2,6 +2,15 @@
   "name": "secrets-broker",
   "private": true,
   "devDependencies": {
-    "@trunkio/launcher": "latest"
+    "@trunkio/launcher": "latest",
+    "prettier": "latest"
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "es5",
+    "proseWrap": "always"
   }
 }
